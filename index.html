@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>추억의 사진관</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #fdf6e3;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 { color: #6b4f3b; }
+    img { width: 420px; border: 2px solid #ccc; margin: 20px 0; }
+    .options button {
+      margin: 10px; padding: 14px 22px; font-size: 20px;
+      background-color: #f8c471; border: none; border-radius: 10px;
+    }
+    .options button:hover { background-color: #f5b041; }
+    #result { font-size: 22px; color: #1c2833; margin-top: 20px; }
+    #next-btn, #hint-btn, #voice-btn {
+      font-size: 18px; padding: 10px 20px; margin: 10px;
+      border: none; border-radius: 8px; background-color: #aed6f1;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="title-ko">추억의 사진관</h1>
+  <h1 id="title-en" style="display:none">Memory Photo Quiz</h1>
+  <button onclick="toggleLanguage()" style="position:absolute; top:20px; right:20px;">🇰🇷 / 🇺🇸</button>
+  <p id="question-text">오빠, 이 사진은 어디일까요?</p>
+  <img id="photo" src="photo1.jpg"><br>
+  <div class="options" id="options"></div>
+  <div id="result"></div>
+  <button id="hint-btn">힌트</button>
+  <button id="voice-btn">음성 안내</button>
+  <button id="next-btn" style="display:none">다음 문제</button>
+
+  <script>
+    const questions = [
+      {
+        img: "photo1.jpg",
+        options_ko: ['선택1A', '선택1B', '선택1C', '선택1D'],
+        options_en: ['Choice1A', 'Choice1B', 'Choice1C', 'Choice1D'],
+        answer_ko: "선택1A",
+        answer_en: "Choice1A",
+        desc_ko: "1번 문제의 한국어 설명입니다.",
+        desc_en: "This is the English explanation for question 1.",
+        hint_ko: "1번 문제의 힌트입니다.",
+        hint_en: "This is a hint for question 1."
+      },
+      {
+        img: "photo2.jpg",
+        options_ko: ['선택2A', '선택2B', '선택2C', '선택2D'],
+        options_en: ['Choice2A', 'Choice2B', 'Choice2C', 'Choice2D'],
+        answer_ko: "선택2A",
+        answer_en: "Choice2A",
+        desc_ko: "2번 문제의 한국어 설명입니다.",
+        desc_en: "This is the English explanation for question 2.",
+        hint_ko: "2번 문제의 힌트입니다.",
+        hint_en: "This is a hint for question 2."
+      },
+      {
+        img: "photo3.jpg",
+        options_ko: ['선택3A', '선택3B', '선택3C', '선택3D'],
+        options_en: ['Choice3A', 'Choice3B', 'Choice3C', 'Choice3D'],
+        answer_ko: "선택3A",
+        answer_en: "Choice3A",
+        desc_ko: "3번 문제의 한국어 설명입니다.",
+        desc_en: "This is the English explanation for question 3.",
+        hint_ko: "3번 문제의 힌트입니다.",
+        hint_en: "This is a hint for question 3."
+      },
+      {
+        img: "photo4.jpg",
+        options_ko: ['선택4A', '선택4B', '선택4C', '선택4D'],
+        options_en: ['Choice4A', 'Choice4B', 'Choice4C', 'Choice4D'],
+        answer_ko: "선택4A",
+        answer_en: "Choice4A",
+        desc_ko: "4번 문제의 한국어 설명입니다.",
+        desc_en: "This is the English explanation for question 4.",
+        hint_ko: "4번 문제의 힌트입니다.",
+        hint_en: "This is a hint for question 4."
+      },
+      {
+        img: "photo5.jpg",
+        options_ko: ['선택5A', '선택5B', '선택5C', '선택5D'],
+        options_en: ['Choice5A', 'Choice5B', 'Choice5C', 'Choice5D'],
+        answer_ko: "선택5A",
+        answer_en: "Choice5A",
+        desc_ko: "5번 문제의 한국어 설명입니다.",
+        desc_en: "This is the English explanation for question 5.",
+        hint_ko: "5번 문제의 힌트입니다.",
+        hint_en: "This is a hint for question 5."
+      },
+      {
+        img: "photo6.jpg",
+        options_ko: ['선택6A', '선택6B', '선택6C', '선택6D'],
+        options_en: ['Choice6A', 'Choice6B', 'Choice6C', 'Choice6D'],
+        answer_ko: "선택6A",
+        answer_en: "Choice6A",
+        desc_ko: "6번 문제의 한국어 설명입니다.",
+        desc_en: "This is the English explanation for question 6.",
+        hint_ko: "6번 문제의 힌트입니다.",
+        hint_en: "This is a hint for question 6."
+      },
+      {
+        img: "photo7.jpg",
+        options_ko: ['선택7A', '선택7B', '선택7C', '선택7D'],
+        options_en: ['Choice7A', 'Choice7B', 'Choice7C', 'Choice7D'],
+        answer_ko: "선택7A",
+        answer_en: "Choice7A",
+        desc_ko: "7번 문제의 한국어 설명입니다.",
+        desc_en: "This is the English explanation for question 7.",
+        hint_ko: "7번 문제의 힌트입니다.",
+        hint_en: "This is a hint for question 7."
+      },
+      {
+        img: "photo8.jpg",
+        options_ko: ['선택8A', '선택8B', '선택8C', '선택8D'],
+        options_en: ['Choice8A', 'Choice8B', 'Choice8C', 'Choice8D'],
+        answer_ko: "선택8A",
+        answer_en: "Choice8A",
+        desc_ko: "8번 문제의 한국어 설명입니다.",
+        desc_en: "This is the English explanation for question 8.",
+        hint_ko: "8번 문제의 힌트입니다.",
+        hint_en: "This is a hint for question 8."
+      },
+      {
+        img: "photo9.jpg",
+        options_ko: ['선택9A', '선택9B', '선택9C', '선택9D'],
+        options_en: ['Choice9A', 'Choice9B', 'Choice9C', 'Choice9D'],
+        answer_ko: "선택9A",
+        answer_en: "Choice9A",
+        desc_ko: "9번 문제의 한국어 설명입니다.",
+        desc_en: "This is the English explanation for question 9.",
+        hint_ko: "9번 문제의 힌트입니다.",
+        hint_en: "This is a hint for question 9."
+      },
+      {
+        img: "photo10.jpg",
+        options_ko: ['선택10A', '선택10B', '선택10C', '선택10D'],
+        options_en: ['Choice10A', 'Choice10B', 'Choice10C', 'Choice10D'],
+        answer_ko: "선택10A",
+        answer_en: "Choice10A",
+        desc_ko: "10번 문제의 한국어 설명입니다.",
+        desc_en: "This is the English explanation for question 10.",
+        hint_ko: "10번 문제의 힌트입니다.",
+        hint_en: "This is a hint for question 10."
+      }
+    ];
+
+    let index = 0;
+    let score = 0;
+    let lang = "ko";
+
+    const photo = document.getElementById("photo");
+    const optionsDiv = document.getElementById("options");
+    const result = document.getElementById("result");
+    const nextBtn = document.getElementById("next-btn");
+    const hintBtn = document.getElementById("hint-btn");
+    const voiceBtn = document.getElementById("voice-btn");
+
+    function loadQuestion() {
+      const q = questions[index];
+      const langOptions = lang === "ko" ? q.options_ko : q.options_en;
+      photo.src = q.img;
+      result.innerText = "";
+      nextBtn.style.display = "none";
+      optionsDiv.innerHTML = "";
+
+      langOptions.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswer(opt);
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selected) {
+      const q = questions[index];
+      const correctAnswer = lang === "ko" ? q.answer_ko : q.answer_en;
+      const desc = lang === "ko" ? q.desc_ko : q.desc_en;
+      const answerText = lang === "ko"
+        ? `오답입니다. 정답은 "{correctAnswer}"입니다. `
+        : `Incorrect. The correct answer is "{correctAnswer}". `;
+      const resultText = selected === correctAnswer
+        ? (lang === "ko" ? "정답입니다! " : "Correct! ") + desc
+        : answerText + desc;
+
+      result.innerText = resultText;
+      if (selected === correctAnswer) score++;
+      nextBtn.style.display = "inline";
+    }
+
+    nextBtn.onclick = () => {
+      index++;
+      if (index < questions.length) {
+        loadQuestion();
+      } else {
+        document.body.innerHTML = `<h2>${lang === "ko" ? "게임 종료!" : "Quiz Finished!"}<br>${lang === "ko" ? "점수:" : "Score:"} ${score} / ${questions.length}</h2>`;
+      }
+    };
+
+    hintBtn.onclick = () => {
+      const q = questions[index];
+      const hint = lang === "ko" ? q.hint_ko : q.hint_en;
+      alert("💡 " + hint);
+    };
+
+    voiceBtn.onclick = () => {
+      const q = questions[index];
+      const desc = lang === "ko" ? q.desc_ko : q.desc_en;
+      const msg = new SpeechSynthesisUtterance(desc);
+      window.speechSynthesis.speak(msg);
+    };
+
+    function toggleLanguage() {
+      lang = lang === "ko" ? "en" : "ko";
+      document.getElementById("title-ko").style.display = lang === "ko" ? "block" : "none";
+      document.getElementById("title-en").style.display = lang === "en" ? "block" : "none";
+      document.getElementById("question-text").innerText =
+        lang === "ko" ? "오빠, 이 사진은 어디일까요?" : "Oppa, where is this photo taken?";
+      document.getElementById("hint-btn").innerText = lang === "ko" ? "힌트" : "Hint";
+      document.getElementById("voice-btn").innerText = lang === "ko" ? "음성 안내" : "Voice";
+      document.getElementById("next-btn").innerText = lang === "ko" ? "다음 문제" : "Next";
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
